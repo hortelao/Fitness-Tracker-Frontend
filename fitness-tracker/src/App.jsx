@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import About from "./pages/About";
+//import About from "./pages/About";
 import PageNotFound from "./pages/PageNotFound";
-import Register from "./pages/Register";
+import SignUp from "./pages/SignUp";
 
 function App() {
 
@@ -14,7 +14,7 @@ function App() {
         <Routes>
           <Route index element={<Home/>} />
           <Route path="/home" element={<Home/>} />
-          <Route path="/register" element={<Register/>} />
+          <Route path="/sign-up" element={<SignUp/>} />
           <Route path="*" element={<PageNotFound/>} />
         </Routes>
       </BrowserRouter>
