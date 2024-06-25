@@ -44,8 +44,7 @@ function LoginForm() {
             const user = result.data[0];
             const isMatch = await bcrypt.compare(userData.password, user.password);
             if(isMatch) {
-                const userId = user.id;
-                document.cookie = `sessionId=${userId}`;
+                document.cookie = `sessionId=${user.id}`;
             } else {
                 setError(true);
             }
