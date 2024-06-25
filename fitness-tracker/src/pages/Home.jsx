@@ -1,6 +1,8 @@
 import React from "react";
 import axios from "axios";
 import bcrypt from 'bcryptjs';
+
+
 function LoginForm() {
 
     const [userData, setUserData] = React.useState({
@@ -26,9 +28,11 @@ function LoginForm() {
 
     async function handleLogin() {
         try {
+
+            
             const result = await axios.post(
                 process.env.REACT_APP_API_URL + "/auth-user",
-                userData,
+                { email: userData.email , token: userData.token},
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -37,10 +41,14 @@ function LoginForm() {
                     withCredentials: true
                 }
             );
-
-            //Save id in cookie
-            const userId = result.data[0].id;
-            document.cookie = `sessionId=${userId}`;
+            const user = result.data[0];
+            const isMatch = await bcrypt.compare(userData.password, user.password);
+            if(isMatch) {
+                const userId = user.id;
+                document.cookie = `sessionId=${userId}`;
+            } else {
+                setError(true);
+            }
         } catch (err) {
             setError(true);
             console.log(err);
@@ -54,6 +62,7 @@ function LoginForm() {
                 console.log('Error', err.message);
             }
         }
+    
     }
 
     return (

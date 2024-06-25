@@ -48,14 +48,16 @@ function SignUp() {
     }
   }
 
-  function handleRegistration(event) {
+  async function handleRegistration(event) {
     if (userData.password.length >= 6) {
       setIsPasswordValid(true);
 
       if (match && isPasswordValid) {
 
 
-        bcrypt.hash(userData.password, 10, async function (err, hash) {
+        var hash = bcrypt.hashSync(userData.password, 9);
+
+        
 
           const result = await axios.post(
             process.env.REACT_APP_API_URL + "/create-user",
@@ -71,7 +73,7 @@ function SignUp() {
               withCredentials: true
             }
           );
-        });
+        
         // All data is correct Proceed with registration
 
 
