@@ -1,6 +1,7 @@
 import React from "react";
 import bcrypt from 'bcryptjs';
 import axios from "axios";
+import { Navigate } from "react-router-dom";
 
 function SignUp() {
   const [userData, setUserData] = React.useState({
@@ -13,9 +14,13 @@ function SignUp() {
 
   const [match, setMatch] = React.useState(true);
   const [isPasswordValid, setIsPasswordValid] = React.useState(true);
+  const [registered, setRegistered] = React.useState(false);
+  const [redirectToDashboard, setRedirectToDashboard] = React.useState(false);
 
   function handleChanges(event) {
     const { name, value } = event.target;
+
+    setRegistered(false);
 
     setUserData((prevValues) => {
       const newValues = {
@@ -49,21 +54,24 @@ function SignUp() {
   }
 
   async function handleRegistration(event) {
-    if (userData.password.length >= 6) {
-      setIsPasswordValid(true);
+    try {
+      if (userData.password.length >= 6) {
+        setIsPasswordValid(true);
 
-      if (match && isPasswordValid) {
+        if (match && isPasswordValid) {
 
 
-        var hash = bcrypt.hashSync(userData.password, 9);
+          var hash = bcrypt.hashSync(userData.password, 9);
 
-        
+          var date = new Date().getDate();
+          var token = bcrypt.hashSync(date.toString(), 2);
 
           const result = await axios.post(
             process.env.REACT_APP_API_URL + "/create-user",
             {
               ...userData,
-              ["password"]: hash
+              ["password"]: hash,
+              token: token
             },
             {
               headers: {
@@ -73,19 +81,31 @@ function SignUp() {
               withCredentials: true
             }
           );
-        
-        // All data is correct Proceed with registration
+
+          // All data is correct Proceed with registration
+          document.cookie = `sessionId=${result.data[0].id}`;
+          document.cookie = `sessionAuth=${token}`;
+          setRedirectToDashboard(true);
+
+         
 
 
+        } else {
+          // Error
+          console.log("Passwords do not match or are invalid. Please correct the passwords.");
+        }
       } else {
-        // Error
-        console.log("Passwords do not match or are invalid. Please correct the passwords.");
+        setIsPasswordValid(false);
       }
-    } else {
-      setIsPasswordValid(false);
+    } catch (err) {
+      setRegistered(true);
     }
     event.preventDefault();
 
+  }
+
+  if (redirectToDashboard) {
+    return <Navigate to="/dashboard" />;
   }
 
   return (
@@ -164,6 +184,11 @@ function SignUp() {
                   >
                     Sign Up
                   </button>
+                  {registered && <p style={{ color: 'yellow' }}>Email already in use</p>}
+                </div>
+                <div>
+                  <p class="mb-0">Already registered? <a href="/" class="text-white-50 fw-bold">Sign In</a>
+                  </p>
                 </div>
               </div>
             </div>

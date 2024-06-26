@@ -1,9 +1,15 @@
 import React from "react";
 import axios from "axios";
 import bcrypt from 'bcryptjs';
+import { Navigate } from "react-router-dom";
 
 
 function LoginForm() {
+
+
+
+
+
 
     const [userData, setUserData] = React.useState({
         email: "",
@@ -12,6 +18,20 @@ function LoginForm() {
     });
 
     const [error, setError] = React.useState(false);
+    const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+
+
+    React.useEffect(() => {
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        if (getCookie("sessionId")) {
+            setIsAuthenticated(true);
+        }
+    }, []);
 
     function handleChanges(event) {
         setError(false)
@@ -29,10 +49,12 @@ function LoginForm() {
     async function handleLogin() {
         try {
 
-            
+            var date = new Date().getDate();
+            var token = bcrypt.hashSync(date.toString(), 2);
+
             const result = await axios.post(
                 process.env.REACT_APP_API_URL + "/auth-user",
-                { email: userData.email , token: userData.token},
+                { email: userData.email, token: token },
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -43,8 +65,11 @@ function LoginForm() {
             );
             const user = result.data[0];
             const isMatch = await bcrypt.compare(userData.password, user.password);
-            if(isMatch) {
+            if (isMatch) {
+                setError(false);
                 document.cookie = `sessionId=${user.id}`;
+                document.cookie = `sessionAuth=${token}`;
+                setIsAuthenticated(true);
             } else {
                 setError(true);
             }
@@ -61,8 +86,13 @@ function LoginForm() {
                 console.log('Error', err.message);
             }
         }
-    
+
     }
+
+    if (isAuthenticated) {
+        return <Navigate to="/dashboard" />;
+    }
+
 
     return (
         <section class="vh-100 gradient-custom">
@@ -89,7 +119,7 @@ function LoginForm() {
 
                                     <p class="small mb-5 pb-lg-2"><a class="text-white-50" href="#!">Forgot password?</a></p>
 
-                                    
+
                                     <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5" type="submit" onClick={handleLogin}>Login</button>
                                     <p style={{ color: 'red' }}>{error ? "Email or Password Incorrect" : null}</p>
 
