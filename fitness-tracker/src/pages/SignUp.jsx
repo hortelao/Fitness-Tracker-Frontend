@@ -70,7 +70,7 @@ function SignUp() {
             process.env.REACT_APP_API_URL + "/create-user",
             {
               ...userData,
-              ["password"]: hash,
+              password: hash,
               token: token
             },
             {

@@ -1,11 +1,11 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+import Home from "./pages/Home.jsx";
 //import About from "./pages/About";
-import PageNotFound from "./pages/PageNotFound";
-import SignUp from "./pages/SignUp";
-import Logout from "./pages/Logout";
-import Dashboard from "./pages/Dashboard";
+import PageNotFound from "./pages/PageNotFound.jsx";
+import SignUp from "./pages/SignUp.jsx";
+import Logout from "./pages/Logout.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 
 function App() {
 

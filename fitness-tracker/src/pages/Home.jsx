@@ -51,6 +51,7 @@ function LoginForm() {
 
             var date = new Date().getDate();
             var token = bcrypt.hashSync(date.toString(), 2);
+            
 
             const result = await axios.post(
                 process.env.REACT_APP_API_URL + "/auth-user",
@@ -63,6 +64,7 @@ function LoginForm() {
                     withCredentials: true
                 }
             );
+
             const user = result.data[0];
             const isMatch = await bcrypt.compare(userData.password, user.password);
             if (isMatch) {
@@ -122,6 +124,7 @@ function LoginForm() {
 
                                     <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5" type="submit" onClick={handleLogin}>Login</button>
                                     <p style={{ color: 'red' }}>{error ? "Email or Password Incorrect" : null}</p>
+                                   
 
                                     <div class="d-flex justify-content-center text-center mt-4 pt-1">
                                         <a href="#!" class="text-white"><i class="fab fa-facebook-f fa-lg"></i></a>
